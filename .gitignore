@@ -1,1 +1,3 @@
-ResultsRUL/
+ResultsRUL/Adversarial/*
+ResultsRUL/Normal/*
+ResultsRUL/OptimalParameters/*
