@@ -1,11 +1,16 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 from time import sleep
 import pandas as pd
 import numpy as np
+import math
+from decimal import Decimal, ROUND_HALF_UP
+from scipy.optimize import curve_fit
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
 
 import Sources.Data as DataTool
 
@@ -84,15 +89,17 @@ def TrainModel(model, trainloader, valloader,epochs, learning_rate, device):
             sleep(0.5)
             print(f'epoch:{i+1}, avg_train_loss:{L/len(trainloader)}, val_loss:{val_loss}')
             
-def DisplayGraph(y_pred, y):
+def DisplayGraph(y_pred, y, Path, Name):
+    Size = len(y_pred) + 1
     fig, ax = plt.subplots(figsize = (14,8))
-    ax.plot(np.arange(1,101), y_pred.detach().cpu().numpy(), label = 'predictions', c = 'salmon')
-    ax.plot(np.arange(1,101), y.detach().cpu().numpy(), label = 'true values', c = 'lightseagreen')
+    ax.plot(np.arange(1,Size), y_pred.detach().cpu().numpy(), label = 'predictions', c = 'salmon')
+    ax.plot(np.arange(1,Size), y.detach().cpu().numpy(), label = 'true values', c = 'lightseagreen')
     ax.set_xlabel('Instance', fontsize = 16)
     ax.set_ylabel('RUL', fontsize = 16)
     ax.grid(True)
     ax.legend()
     plt.show()
+    plt.savefig(Path + Name, dpi=300)
     
 def GetL0(X, Z):
     L2 = ((X - Z) ** 2)
@@ -142,3 +149,114 @@ def CreateDFSFiles(testloaderAttack, X, AdvX, y, model, minmax_dict, NormalOutpu
         
         extra_info = GetInfos(X[i:i+1], y[i:i+1], 0, AdvX[i:i+1], model)   
         SaveDFS(ADF, i, 'AdversarialDF', extra_info, AdversarialOutputPath)
+        
+
+def round_column(series, decimal_places):
+    return series.apply(lambda x: float(Decimal(str(x)).quantize(Decimal('1e-{0}'.format(decimal_places)), rounding=ROUND_HALF_UP)))
+
+def ApplyDiscrete(DF, minmax_dict):
+    for c in DF.columns:
+        if c + 'unit' in minmax_dict:
+            Dec = minmax_dict[c + 'unit']
+            if math.isnan(Dec):
+                Dec = 0
+            DF[c] = round_column(DF[c], Dec)       
+    return DF 
+
+def TestProjectionCost(testloaderAttack, X, Adversarial, MyModel, minmax_dict, window, device):
+    columns_to_update = ['os1', 'os2', 'os3', 's1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11', 's12', 's13', 's14', 's15', 's16', 's17', 's18', 's19', 's20', 's21']
+    ListADF = []
+
+    CurrentDataset = testloaderAttack.dataset
+ 
+    for i in range(len(Adversarial)):
+        DF = CurrentDataset.__getdf__(i)
+        DF[columns_to_update] = Adversarial[i].cpu().detach().numpy()
+        ADF = DataTool.UnnormalizeDataset(DF, minmax_dict)
+        PDF = ApplyDiscrete(ADF, minmax_dict)
+        NPDF = DataTool.NormalizeDataset(PDF, minmax_dict)
+        ListADF.append(NPDF)
+
+    FADF = pd.concat(ListADF, ignore_index=True)
+    FADF = FADF.drop('index', axis=1)
+    
+    testdataset2 = DataTool.test(FADF, window)
+    testloader2 = DataLoader(testdataset2, batch_size = 100)
+    
+    for Adv, y in testloader2:
+        X, Adv, y = X.to(device).to(torch.float32), Adv.to(device).to(torch.float32), y.to(device).to(torch.float32)
+        Infos = GetInfos(X, y, 0, Adversarial, MyModel)
+        print("Initial:", Infos)
+        Infos = GetInfos(X, y, 0, Adv, MyModel)
+        print("Formated:", Infos)
+    print()
+    
+    return Adv
+    
+def DisplayCgraph(A, B, C, MainLabel, label1, label2, Path, Name):
+    fig, ax1 = plt.subplots()
+    ax1.set_xscale('log')
+
+    ax1.plot(A, B, 'b-', label=label1)
+    ax1.set_xlabel('c')
+    
+    ax1.set_ylabel(label1, color='b')
+    ax1.tick_params(axis='y', labelcolor='b')
+
+    ax2 = ax1.twinx()
+    ax2.plot(A, C, 'r-', label=label2)
+    
+    ax2.set_ylabel(label2, color='r')
+    ax2.tick_params(axis='y', labelcolor='r')
+
+    plt.title(MainLabel)
+    fig.tight_layout()
+
+    plt.show()
+    plt.savefig(Path + Name, dpi=300)
+    
+def exp_degradation(x, D0, lambda_):
+    return D0 * np.exp(lambda_ * x)
+
+def prepare_batch(X_batch, y_batch):
+    X_batch_np = X_batch.view(X_batch.size(0), -1).numpy()
+    y_batch_np = y_batch.numpy()
+    
+    X_batch_np = np.mean(X_batch_np, axis=1)
+    
+    return X_batch_np, y_batch_np
+
+def prepare_data(loader):
+    X_list = []
+    y_list = []
+    for X_batch, y_batch in loader:
+        X_list.append(X_batch.view(X_batch.size(0), -1).numpy())
+        y_list.append(y_batch.numpy())
+    X_np = np.vstack(X_list)
+    y_np = np.hstack(y_list)
+    
+    X_np = np.mean(X_np, axis=1)
+    
+    return X_np, y_np
+
+def TrainStatModel(trainloader):
+    X_train_np, y_train_np = prepare_data(trainloader)
+    Param, pcov = curve_fit(exp_degradation, X_train_np, y_train_np, maxfev=10000)
+    return Param
+
+def GetStatsInfos(X, y, Objective, AX, Parameters):
+    X, y, AX = X.cpu(), y.cpu(), AX.cpu()
+    rmse_adversarials = PredRmse(X, AX).item()
+    X_adv_np, y_adv_np = prepare_batch(AX.detach(), y)
+    output = exp_degradation(X_adv_np, *Parameters)
+    average = torch.mean(torch.tensor(output).float()).item()
+    averagey = torch.mean(y.float()).item()
+    rmse_pred = PredRmse(y.float(), torch.tensor(output).float()).item()
+    extra_info = {
+        'RealRUL': averagey,
+        'Objective': Objective,
+        'PredRUL': average,
+        'RMSE_adversarial': rmse_adversarials,
+        'RMSE_pred': rmse_pred
+    }
+    return extra_info

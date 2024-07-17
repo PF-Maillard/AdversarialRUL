@@ -4,9 +4,10 @@ import pandas as pd
 
 
 class data(Dataset):
-    def __init__(self, list_indices, df):
+    def __init__(self, list_indices, df, window):
         self.indices = list_indices
         self.df = df
+        self.window = window
         
     def __len__(self):
         
@@ -15,34 +16,41 @@ class data(Dataset):
     def __getitem__(self, idx):
         
         ind = self.indices[idx]
-        X_ = self.df.iloc[ind : ind + 20, :].drop(['time','unit','rul'], axis = 1).copy().to_numpy()
-        y_ = self.df.iloc[ind + 19]['rul']
+        X_ = self.df.iloc[ind : ind + self.window, :].drop(['time','unit','rul'], axis = 1).copy().to_numpy()
+        y_ = self.df.iloc[ind + self.window - 1]['rul']
         
         return X_, y_
     
     def __getdf__(self, idx):
         
         ind = self.indices[idx]
-        df = self.df.iloc[ind : ind + 20, :].copy()
+        df = self.df.iloc[ind : ind + self.window, :].copy()
         
         return df
     
 class test(Dataset):
     
-    def __init__(self, units, Ndf_test):
+    def __init__(self, df, window):
         
-        self.units = units
-        self.Ndf_test = Ndf_test
+        UnitBySize = df.groupby('unit')['time'].max().tolist()
+        Uniques = df['unit'].unique().tolist()
+        Units = []
+        for i in range(len(UnitBySize)):
+            if UnitBySize[i] > window:
+                Units.append(Uniques[i])
+        
+        self.units = Units
+        self.df = df
+        self.window = window
         
     def __len__(self):
-        
         return len(self.units)
     
     def __getitem__(self, idx):
-        
+       
         n = self.units[idx]
-        U = self.Ndf_test[self.Ndf_test['unit'] == n].copy()
-        X_ = U.reset_index().iloc[-20:,:].drop(['index','unit','time','rul'], axis = 1).copy().to_numpy()
+        U = self.df[self.df['unit'] == n].copy()
+        X_ = U.reset_index().iloc[-self.window:,:].drop(['index','unit','time','rul'], axis = 1).copy().to_numpy()
         y_ = U['rul'].min()
         
         return X_, y_
@@ -50,8 +58,8 @@ class test(Dataset):
     def __getdf__(self, idx):
         
         n = self.units[idx]
-        U = self.Ndf_test[self.Ndf_test['unit'] == n].copy()
-        df = U.reset_index().iloc[-20:,:].copy()
+        U = self.df[self.df['unit'] == n].copy()
+        df = U.reset_index().iloc[-self.window:,:].copy()
         
         return df
 
