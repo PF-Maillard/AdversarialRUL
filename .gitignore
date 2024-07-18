@@ -5,8 +5,8 @@ ResultsRUL/Normal/*
 ResultsRUL/OptimalParameters/*
 ResultsRUL/Figures/*
 
-!DatasetRUL/
-!ResultsRUL/
+!DatasetRUL/.gitkeep
+!ResultsRUL/.gitkeep
 !ResultsRUL/Adversarial/    
 !ResultsRUL/Normal/
 !ResultsRUL/OptimalParameters/
