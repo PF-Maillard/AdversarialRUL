@@ -4,3 +4,9 @@ ResultsRUL/Adversarial/*
 ResultsRUL/Normal/*
 ResultsRUL/OptimalParameters/*
 ResultsRUL/Figures/*
+
+!DatasetRUL/
+!ResultsRUL/Adversarial/    
+!ResultsRUL/Normal/
+!ResultsRUL/OptimalParameters/
+!ResultsRUL/Figures/
