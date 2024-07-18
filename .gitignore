@@ -1,15 +1,36 @@
 DatasetRUL/*
 
-ResultsRUL/Adversarial/*
-ResultsRUL/Normal/*
 ResultsRUL/OptimalParameters/*
 ResultsRUL/Figures/*
 
+ResultsRUL/Normal/RNN/*
+ResultsRUL/Normal/GRU/*
+ResultsRUL/Normal/LSTM/*
+
+ResultsRUL/Adversarial/RNN/FGSM/*
+ResultsRUL/Adversarial/RNN/BIM/*
+ResultsRUL/Adversarial/RNN/CW/*
+ResultsRUL/Adversarial/RNN/L2/*
+ResultsRUL/Adversarial/RNN/L0/*
+
+ResultsRUL/Adversarial/GRU/FGSM/*
+ResultsRUL/Adversarial/GRU/BIM/*
+ResultsRUL/Adversarial/GRU/CW/*
+ResultsRUL/Adversarial/GRU/L2/*
+ResultsRUL/Adversarial/GRU/L0/*
+
+ResultsRUL/Adversarial/LSTM/FGSM/*
+ResultsRUL/Adversarial/LSTM/BIM/*
+ResultsRUL/Adversarial/LSTM/CW/*
+ResultsRUL/Adversarial/LSTM/L2/*
+ResultsRUL/Adversarial/LSTM/L0/*
+
+
+
+
 !DatasetRUL/.gitkeep
 !ResultsRUL/OptimalParameters/.gitkeep
-!ResultsRUL/Figures/.gitkeep
-
-!ResultsRUL/Adversarial/    
+!ResultsRUL/Figures/.gitkeep  
 
 !ResultsRUL/Normal/RNN/.gitkeep
 !ResultsRUL/Normal/GRU/.gitkeep
