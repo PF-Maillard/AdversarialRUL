@@ -1,5 +1,6 @@
 import random
-
+from scipy.optimize import curve_fit
+import numpy as np
 
 import torch
 import torch.nn as nn
@@ -248,9 +249,9 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, device):
     LearningRate = 0.01
     Objective = 0 
     
-    KList = {0.3, 0.6, 1, 5, 10}
+    KList = {1, 2, 3, 4, 5, 8, 10}
     FixP = 5
-    FixS = 0.01
+    FixS = 0.1
     c = 1
     with open(OptimalParametersPath + "OptimizeK.txt", "w") as file:
         while c > 0.0001:
@@ -260,14 +261,14 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, device):
                 result = f"{c}, {k}, {info}\n"
                 file.write(result)
                 file.flush()
-                print(c, k, result)
+                print(result)
             print()
             c/=2
     print("Created at: " + OptimalParametersPath + "OptimizeK.txt")
             
-    FixK = 1
+    FixK = 5
     PList = [1,2,5,8]
-    SList = [0.003, 0.01, 0.03, 0.1]
+    SList = [0.03, 0.1, 0.2, 0.3]
     c = 1
     with open(OptimalParametersPath + "OptimizePS.txt", "w") as file:
         while c > 0.0001:
@@ -298,12 +299,10 @@ def TestNewAttacks(model, X, y, AttacksParameters, device, Path, Name):
     A = [item['c'] for item in LInfos]
     B = [item['PredRUL'] for item in LInfos]
     C = [item['RMSE_adversarial'] for item in LInfos]
-    UtilsTool.DisplayCgraph(A, B, C, 'PredRUL and RMSE evolution', 'RUL', 'RMSE', Path, Name + "L2")
+    UtilsTool.DisplayCgraph(A, B, C, 'L2 Attack', 'RUL', 'RMSE', Path, Name + "L2")
     
     LInfos2 = IterativeMaillardL0(model, AttacksParameters["Maillard"]["Objective"], X, y, AttacksParameters["Maillard"]["LearningRate"], AttacksParameters["Maillard"]["Initial_c"], AttacksParameters["Maillard"]["Final_c"], AttacksParameters["Maillard"]["Steps_c"], AttacksParameters["Maillard"]["Iterations"], AttacksParameters["Maillard"]["k"], AttacksParameters["Maillard"]["P"], AttacksParameters["Maillard"]["S"], device)
     A = [item['c'] for item in LInfos2]
     B = [item['PredRUL'] for item in LInfos2]
     C = [item['L0'] for item in LInfos2]
-    UtilsTool.DisplayCgraph(A, B, C, ' RUL and L0 evolution', 'RUL', 'L0', Path, Name + "L0")
-    
-    
+    UtilsTool.DisplayCgraph(A, B, C, ' L0 Attack', 'RUL', 'L0', Path, Name + "L0")

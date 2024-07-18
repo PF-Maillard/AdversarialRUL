@@ -6,6 +6,9 @@ import numpy as np
 import math
 from decimal import Decimal, ROUND_HALF_UP
 from scipy.optimize import curve_fit
+import ast
+from collections import defaultdict
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -98,8 +101,9 @@ def DisplayGraph(y_pred, y, Path, Name):
     ax.set_ylabel('RUL', fontsize = 16)
     ax.grid(True)
     ax.legend()
-    plt.show()
     plt.savefig(Path + Name, dpi=300)
+    plt.show()
+    
     
 def GetL0(X, Z):
     L2 = ((X - Z) ** 2)
@@ -203,6 +207,7 @@ def DisplayCgraph(A, B, C, MainLabel, label1, label2, Path, Name):
     ax1.set_ylabel(label1, color='b')
     ax1.tick_params(axis='y', labelcolor='b')
 
+
     ax2 = ax1.twinx()
     ax2.plot(A, C, 'r-', label=label2)
     
@@ -212,8 +217,9 @@ def DisplayCgraph(A, B, C, MainLabel, label1, label2, Path, Name):
     plt.title(MainLabel)
     fig.tight_layout()
 
-    plt.show()
     plt.savefig(Path + Name, dpi=300)
+    plt.show()
+    
     
 def exp_degradation(x, D0, lambda_):
     return D0 * np.exp(lambda_ * x)
@@ -260,3 +266,131 @@ def GetStatsInfos(X, y, Objective, AX, Parameters):
         'RMSE_pred': rmse_pred
     }
     return extra_info
+
+def AnalyzeK(Intersection, Path, PathSaving):
+    with open(Path + "OptimizeK.txt", 'r') as file:
+        Data = defaultdict(list)
+        
+        for line in file:
+            parts = line.split(", ", 2)
+            c = float(parts[0])
+            k = float(parts[1])
+            MyDict = parts[2].replace("tensor", "")
+            MyDict = ast.literal_eval(MyDict)
+            Data[k].append({'c': c, 'k': k, 'PredRUL': MyDict["PredRUL"], 'L0': MyDict["L0"]})
+        
+    for k_value, rows in Data.items():
+        c_values = [row['c'] for row in rows]
+        RUL_values = [row['PredRUL'] for row in rows]
+        L0_values = [row['L0'] for row in rows]
+        
+        filtered_c_values = [c for c, L0 in zip(c_values, L0_values) if L0 != 0]
+        filtered_L0_values = [L0 for L0 in L0_values if L0 != 0]
+        
+        fig, ax1 = plt.subplots(figsize=(8, 6))
+        
+        ax1.set_xlabel('c')
+        ax1.set_ylabel('RUL', color='tab:blue')
+        ax1.plot(c_values, RUL_values, marker='x', color='tab:blue', label='RUL')
+        ax1.tick_params(axis='y', labelcolor='tab:blue')
+        ax1.set_xscale('log')
+        
+        ax2 = ax1.twinx()
+        ax2.set_ylabel('L0', color='tab:red')
+        ax2.plot(filtered_c_values, filtered_L0_values, marker='x', color='tab:red', linestyle='--', label='L0')
+        ax2.tick_params(axis='y', labelcolor='tab:red')
+        ax2.set_xscale('log')
+        ax2.set_ylim(0, 24)
+        
+        ax1.axhline(y=Intersection, color='black')
+        
+        MinC = None
+        L0_min = 24
+        for c, RUL, L0 in zip(c_values, RUL_values, L0_values):
+            if RUL <= Intersection and L0 < L0_min:
+                L0_min = L0
+                MinC = c
+
+        if MinC is not None:
+            ax1.axvline(x=MinC, color='green', linestyle='--')
+            
+            L0_at_c = None
+            for c, L0 in zip(filtered_c_values, filtered_L0_values):
+                if c == MinC:
+                    L0_at_c = L0
+                    break
+            
+            if L0_at_c is not None:
+                ax2.annotate(f'L0={L0_at_c:.2f}', xy=(MinC, L0_at_c), xytext=(MinC, L0_at_c+2),
+                            arrowprops=dict(facecolor='black', shrink=0.05))        
+
+        plt.title(f'k = {k_value}')
+        fig.tight_layout() 
+        fig.legend(loc="upper left", bbox_to_anchor=(0.1, 0.9))
+        plt.savefig(f'{PathSaving}Optimization_{k_value}.png', dpi=300)
+        plt.show()
+        
+        
+def AnalyzePS(Intersection, Path, PathSaving):
+    with open(Path + "OptimizePS.txt", 'r') as file:
+        Data = defaultdict(list)
+        
+        for line in file:
+            parts = line.split(", ", 3)
+            c = float(parts[0])
+            P = float(parts[1])
+            S = float(parts[2])
+            MyDict = parts[3].replace("tensor", "")
+            MyDict = ast.literal_eval(MyDict)
+            Data[str(P) + " " + str(S)].append({'c': c, 'PS': str(P) + ", " + str(S), 'PredRUL': MyDict["PredRUL"], 'L0': MyDict["L0"]})
+        
+    for PS, rows in Data.items():
+        c_values = [row['c'] for row in rows]
+        RUL_values = [row['PredRUL'] for row in rows]
+        L0_values = [row['L0'] for row in rows]
+        
+        filtered_c_values = [c for c, L0 in zip(c_values, L0_values) if L0 != 0]
+        filtered_L0_values = [L0 for L0 in L0_values if L0 != 0]
+        
+        fig, ax1 = plt.subplots(figsize=(8, 6))
+        
+        ax1.set_xlabel('c')
+        ax1.set_ylabel('RUL', color='tab:blue')
+        ax1.plot(c_values, RUL_values, marker='x', color='tab:blue', label='RUL')
+        ax1.tick_params(axis='y', labelcolor='tab:blue')
+        ax1.set_xscale('log')
+        
+        ax2 = ax1.twinx()
+        ax2.set_ylabel('L0', color='tab:red')
+        ax2.plot(filtered_c_values, filtered_L0_values, marker='x', color='tab:red', linestyle='--', label='L0')
+        ax2.tick_params(axis='y', labelcolor='tab:red')
+        ax2.set_xscale('log')
+        ax2.set_ylim(0, 24)
+        
+        ax1.axhline(y=Intersection, color='black')
+        
+        MinC = None
+        L0_min = 24
+        for c, RUL, L0 in zip(c_values, RUL_values, L0_values):
+            if RUL <= Intersection and L0 < L0_min:
+                L0_min = L0
+                MinC = c
+
+        if MinC is not None:
+            ax1.axvline(x=MinC, color='green', linestyle='--')
+            
+            L0_at_c = None
+            for c, L0 in zip(filtered_c_values, filtered_L0_values):
+                if c == MinC:
+                    L0_at_c = L0
+                    break
+            
+            if L0_at_c is not None:
+                ax2.annotate(f'L0={L0_at_c:.2f}', xy=(MinC, L0_at_c), xytext=(MinC, L0_at_c+2),
+                            arrowprops=dict(facecolor='black', shrink=0.05))        
+
+        plt.title(f'P, S = {PS}')
+        fig.tight_layout() 
+        fig.legend(loc="upper left", bbox_to_anchor=(0.1, 0.9))
+        plt.savefig(f'{PathSaving}Optimization{PS}.png', dpi=300)
+        plt.show()
