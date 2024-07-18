@@ -26,8 +26,6 @@ ResultsRUL/Adversarial/LSTM/L2/*
 ResultsRUL/Adversarial/LSTM/L0/*
 
 
-
-
 !DatasetRUL/.gitkeep
 !ResultsRUL/OptimalParameters/.gitkeep
 !ResultsRUL/Figures/.gitkeep  

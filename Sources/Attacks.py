@@ -231,17 +231,18 @@ def MaillardL0(model, Objective, X, y, LearningRate, c, epochs, k, P, S, device)
             if token == 1 and loss.item() < MinLoss:
                 MinLoss = loss.item()
                 SavedAdv = Adv.clone()
-            
+                
             Optimizer.zero_grad()
             loss.backward()
             Optimizer.step()
-            
+        
         LAdversarial.append(SavedAdv) 
     FAdversarial = torch.cat(LAdversarial, dim=0)
+    
     return FAdversarial
 
 
-def OptimizeParameters(X, y, Model, OptimalParametersPath, device):
+def OptimizeParameters(X, y, Model, OptimalParametersPath, TempoK, Name, device):
     
     X, y = X.to(device).to(torch.float32), y.to(device).to(torch.float32)
     
@@ -249,11 +250,11 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, device):
     LearningRate = 0.01
     Objective = 0 
     
-    KList = {1, 2, 3, 4, 5, 8, 10}
+    KList = {1, 2, 3, 4, 5, 8, 10, 12, 15}
     FixP = 5
     FixS = 0.1
     c = 1
-    with open(OptimalParametersPath + "OptimizeK.txt", "w") as file:
+    with open(OptimalParametersPath + "OptimizeK" + Name + ".txt", "w") as file:
         while c > 0.0001:
             for k in KList:
                 CurrentAdversarial = MaillardL0(Model, Objective, X, y, LearningRate, c, Epochs, k, FixP, FixS, device)
@@ -264,13 +265,13 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, device):
                 print(result)
             print()
             c/=2
-    print("Created at: " + OptimalParametersPath + "OptimizeK.txt")
+    print("Created at: " + OptimalParametersPath + "OptimizeK" + Name + ".txt")
             
-    FixK = 5
-    PList = [1,2,5,8]
-    SList = [0.03, 0.1, 0.2, 0.3]
+    FixK = TempoK
+    PList = [1, 3, 5, 8]
+    SList = [0.03, 0.06, 0.1, 0.3]
     c = 1
-    with open(OptimalParametersPath + "OptimizePS.txt", "w") as file:
+    with open(OptimalParametersPath + "OptimizePS" + Name + ".txt", "w") as file:
         while c > 0.0001:
             for P in PList:
                 for S in SList:
@@ -282,16 +283,14 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, device):
                     print(result)
             print()
             c/=2
-    print("Created at: " + OptimalParametersPath + "OptimizePS.txt")
-    
+    print("Created at: " + OptimalParametersPath + "OptimizeK" + Name + ".txt")
+
 def GetL0(X, Z):
     L2 = ((X - Z) ** 2)
     Result = torch.sum(L2, dim=1)
     Result = torch.sum(Result != 0, dim=1)
     Result = Result.float().mean()
     return Result
-
-
 
 def TestNewAttacks(model, X, y, AttacksParameters, device, Path, Name):
     X, y = X.to(device).to(torch.float32), y.to(device).to(torch.float32)

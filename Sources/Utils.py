@@ -268,7 +268,7 @@ def GetStatsInfos(X, y, Objective, AX, Parameters):
     return extra_info
 
 def AnalyzeK(Intersection, Path, PathSaving):
-    with open(Path + "OptimizeK.txt", 'r') as file:
+    with open(Path, 'r') as file:
         Data = defaultdict(list)
         
         for line in file:
@@ -332,7 +332,7 @@ def AnalyzeK(Intersection, Path, PathSaving):
         
         
 def AnalyzePS(Intersection, Path, PathSaving):
-    with open(Path + "OptimizePS.txt", 'r') as file:
+    with open(Path, 'r') as file:
         Data = defaultdict(list)
         
         for line in file:
