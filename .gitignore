@@ -6,6 +6,7 @@ ResultsRUL/OptimalParameters/*
 ResultsRUL/Figures/*
 
 !DatasetRUL/
+!ResultsRUL/
 !ResultsRUL/Adversarial/    
 !ResultsRUL/Normal/
 !ResultsRUL/OptimalParameters/
