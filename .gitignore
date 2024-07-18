@@ -5,7 +5,7 @@ ResultsRUL/Normal/*
 ResultsRUL/OptimalParameters/*
 ResultsRUL/Figures/*
 
-!DatasetRUL/
+!DatasetRUL/readme.txt
 !ResultsRUL/
 !ResultsRUL/Adversarial/    
 !ResultsRUL/Normal/
