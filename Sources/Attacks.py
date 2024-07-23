@@ -305,3 +305,24 @@ def TestNewAttacks(model, X, y, AttacksParameters, device, Path, Name):
     B = [item['PredRUL'] for item in LInfos2]
     C = [item['L0'] for item in LInfos2]
     UtilsTool.DisplayCgraph(A, B, C, ' L0 Attack', 'RUL', 'L0', Path, Name + "L0")
+    
+def Torch_exp_degradation(x, D0, lambda_ ):
+    return D0 * torch.exp(lambda_  * x)
+
+def CreateAdversarialStats(X, y, Param, c, Epochs, LearningRate):
+    Xt = torch.tensor(X, dtype=torch.float64)
+    Adv = Xt.clone()
+    Adv = Adv.requires_grad_(True)
+    Optimizer = optim.Adam([Adv], lr=LearningRate)
+    MseLoss = torch.nn.MSELoss()
+    for i in range(Epochs):
+        Optimizer.zero_grad() 
+        A = Adv.view(Adv.size(0), -1)
+        A = torch.mean(A, axis=1)
+        y_pred = Torch_exp_degradation(A, Param[0], Param[1])
+        LossPred = MseLoss(y_pred, torch.zeros_like(y_pred))
+        LossClose = MseLoss(Adv, Xt)
+        Loss = LossPred * c + LossClose
+        Loss.backward()
+        Optimizer.step()
+    return Adv
