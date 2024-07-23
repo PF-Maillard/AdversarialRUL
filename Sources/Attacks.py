@@ -254,6 +254,7 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, TempoK, Name, device)
     FixP = 5
     FixS = 0.1
     c = 1
+
     with open(OptimalParametersPath + "OptimizeK" + Name + ".txt", "w") as file:
         while c > 0.0001:
             for k in KList:
@@ -266,7 +267,7 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, TempoK, Name, device)
             print()
             c/=2
     print("Created at: " + OptimalParametersPath + "OptimizeK" + Name + ".txt")
-            
+   
     FixK = TempoK
     PList = [1, 3, 5, 8]
     SList = [0.03, 0.06, 0.1, 0.3]
@@ -283,7 +284,7 @@ def OptimizeParameters(X, y, Model, OptimalParametersPath, TempoK, Name, device)
                     print(result)
             print()
             c/=2
-    print("Created at: " + OptimalParametersPath + "OptimizeK" + Name + ".txt")
+    print("Created at: " + OptimalParametersPath + "OptimizePS" + Name + ".txt")
 
 def GetL0(X, Z):
     L2 = ((X - Z) ** 2)
