@@ -51,3 +51,10 @@ ResultsRUL/Adversarial/LSTM/L0/*
 !ResultsRUL/Adversarial/LSTM/CW/.gitkeep
 !ResultsRUL/Adversarial/LSTM/L2/.gitkeep
 !ResultsRUL/Adversarial/LSTM/L0/.gitkeep
+
+!ResultsRUL/OptimalParameters/OptimizeKRNN.txt
+!ResultsRUL/OptimalParameters/OptimizeKGRU.txt
+!ResultsRUL/OptimalParameters/OptimizeKLSTM.txt
+!ResultsRUL/OptimalParameters/OptimizePSRNN.txt
+!ResultsRUL/OptimalParameters/OptimizePSGRU.txt
+!ResultsRUL/OptimalParameters/OptimizePSLSTM.txt
