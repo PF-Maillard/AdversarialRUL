@@ -84,3 +84,26 @@ class LSTMModel(nn.Module):
         out = self.linear3(out).flatten()
         
         return out
+    
+class ExpDegradationModel(nn.Module):
+    def __init__(self, n_sensors):
+        super(ExpDegradationModel, self).__init__()
+        self.a = nn.Parameter(torch.ones(1))
+        self.b = nn.Parameter(torch.ones(n_sensors))
+
+    def forward(self, x):
+        A = x @ self.b
+        A = torch.mean(self.a * torch.exp(A), dim=(1))
+        return A
+    
+class SingleExpDegradationModel(nn.Module):
+    def __init__(self):
+        super(SingleExpDegradationModel, self).__init__()
+        self.a = nn.Parameter(torch.ones(1))
+        self.b = nn.Parameter(torch.ones(1))
+
+    def forward(self, x):
+        x = x.view(x.size(0), -1)
+        x = torch.mean(x, axis=1)
+        A = self.a * torch.exp(self.b * x)
+        return A

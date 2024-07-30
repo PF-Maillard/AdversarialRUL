@@ -6,6 +6,8 @@ ResultsRUL/Figures/*
 ResultsRUL/Normal/RNN/*
 ResultsRUL/Normal/GRU/*
 ResultsRUL/Normal/LSTM/*
+ResultsRUL/Normal/EXP/*
+ResultsRUL/Normal/SingleEXP/*
 
 ResultsRUL/Adversarial/RNN/FGSM/*
 ResultsRUL/Adversarial/RNN/BIM/*
@@ -25,6 +27,17 @@ ResultsRUL/Adversarial/LSTM/CW/*
 ResultsRUL/Adversarial/LSTM/L2/*
 ResultsRUL/Adversarial/LSTM/L0/*
 
+ResultsRUL/Adversarial/SingleEXP/FGSM/*
+ResultsRUL/Adversarial/SingleEXP/BIM/*
+ResultsRUL/Adversarial/SingleEXP/CW/*
+ResultsRUL/Adversarial/SingleEXP/L2/*
+ResultsRUL/Adversarial/SingleEXP/L0/*
+
+ResultsRUL/Adversarial/EXP/FGSM/*
+ResultsRUL/Adversarial/EXP/BIM/*
+ResultsRUL/Adversarial/EXP/CW/*
+ResultsRUL/Adversarial/EXP/L2/*
+ResultsRUL/Adversarial/EXP/L0/*
 
 !DatasetRUL/.gitkeep
 !ResultsRUL/OptimalParameters/.gitkeep
@@ -33,6 +46,8 @@ ResultsRUL/Adversarial/LSTM/L0/*
 !ResultsRUL/Normal/RNN/.gitkeep
 !ResultsRUL/Normal/GRU/.gitkeep
 !ResultsRUL/Normal/LSTM/.gitkeep
+!ResultsRUL/Normal/SingleEXP/.gitkeep
+!ResultsRUL/Normal/EXP/.gitkeep
 
 !ResultsRUL/Adversarial/RNN/FGSM/.gitkeep
 !ResultsRUL/Adversarial/RNN/BIM/.gitkeep
@@ -52,9 +67,27 @@ ResultsRUL/Adversarial/LSTM/L0/*
 !ResultsRUL/Adversarial/LSTM/L2/.gitkeep
 !ResultsRUL/Adversarial/LSTM/L0/.gitkeep
 
+!ResultsRUL/Adversarial/SingleEXP/FGSM/.gitkeep
+!ResultsRUL/Adversarial/SingleEXP/BIM/.gitkeep
+!ResultsRUL/Adversarial/SingleEXP/CW/.gitkeep
+!ResultsRUL/Adversarial/SingleEXP/L2/.gitkeep
+!ResultsRUL/Adversarial/SingleEXP/L0/.gitkeep
+
+!ResultsRUL/Adversarial/EXP/FGSM/.gitkeep
+!ResultsRUL/Adversarial/EXP/BIM/.gitkeep
+!ResultsRUL/Adversarial/EXP/CW/.gitkeep
+!ResultsRUL/Adversarial/EXP/L2/.gitkeep
+!ResultsRUL/Adversarial/EXP/L0/.gitkeep
+
 !ResultsRUL/OptimalParameters/OptimizeKRNN.txt
 !ResultsRUL/OptimalParameters/OptimizeKGRU.txt
 !ResultsRUL/OptimalParameters/OptimizeKLSTM.txt
+!ResultsRUL/OptimalParameters/OptimizeKEXP.txt
+!ResultsRUL/OptimalParameters/OptimizeKSingleEXP.txt
+
 !ResultsRUL/OptimalParameters/OptimizePSRNN.txt
 !ResultsRUL/OptimalParameters/OptimizePSGRU.txt
 !ResultsRUL/OptimalParameters/OptimizePSLSTM.txt
+!ResultsRUL/OptimalParameters/OptimizePSEXP.txt
+!ResultsRUL/OptimalParameters/OptimizePSSingleEXP.txt
+

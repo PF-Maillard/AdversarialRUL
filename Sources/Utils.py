@@ -14,8 +14,11 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
+from scipy.optimize import least_squares
 
 import Sources.Data as DataTool
+
+
 
 def InitModel(model, device):
     model = model.to(device)
@@ -394,3 +397,34 @@ def AnalyzePS(Intersection, Path, PathSaving):
         fig.legend(loc="upper left", bbox_to_anchor=(0.1, 0.9))
         plt.savefig(f'{PathSaving}Optimization{PS}.png', dpi=300)
         plt.show()
+        
+def model_predict(X, a, *b, CurrentModel):
+    with torch.no_grad():
+        CurrentModel.a = nn.Parameter(torch.tensor(a, dtype=torch.float64))
+        CurrentModel.b = nn.Parameter(torch.tensor(b, dtype=torch.float64))
+        ypred = CurrentModel(torch.tensor(X).double()).numpy()
+    return ypred
+
+def residuals(params, X, y, CurrentModel):
+    a = params[0]
+    b = params[1:]
+    y_pred = model_predict(X, a, *b, CurrentModel=CurrentModel)
+    return (y - y_pred)
+
+def TrainStatsModelLM(MyModel, trainloader, device):
+
+    FullLoader = DataLoader(trainloader.dataset, batch_size=len(trainloader.dataset), shuffle=False)
+    X, y = next(iter(FullLoader))
+    X, y = X.to(device).float(), y.to(device).float()
+
+    initial_params = [MyModel.a.item()] + MyModel.b.cpu().detach().numpy().tolist()
+    initial_params = np.hstack(initial_params)
+
+    result = least_squares(residuals, initial_params, args=(X.cpu().detach().numpy(), y.cpu().detach().numpy(), MyModel), method='lm')
+
+    optimized_a = result.x[0]
+    optimized_b = result.x[1:]
+
+    with torch.no_grad():
+        MyModel.a = nn.Parameter(torch.tensor(optimized_a, dtype=torch.float))
+        MyModel.b = nn.Parameter(torch.tensor(optimized_b, dtype=torch.float))
