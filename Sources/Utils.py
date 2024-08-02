@@ -428,3 +428,21 @@ def TrainStatsModelLM(MyModel, trainloader, device):
     with torch.no_grad():
         MyModel.a = nn.Parameter(torch.tensor(optimized_a, dtype=torch.float))
         MyModel.b = nn.Parameter(torch.tensor(optimized_b, dtype=torch.float))
+        
+def DisplayTransferability(Adversarials, X, y, Model, ModelName):
+    print(ModelName)
+    for CurrentAdversarials in Adversarials:
+        for Adversarial in CurrentAdversarials:
+            print(GetInfos(X, y, 0, Adversarial, Model))
+        print()
+        
+def PlotTensor(tensor, Name):
+    array = tensor.numpy()
+
+    plt.plot(array)
+    plt.title('1D PyTorch Tensor Plot')
+    plt.xlabel('Index')
+    plt.ylabel('Value')
+    plt.grid(True)
+    plt.show()
+    plt.savefig(Name, dpi=300)

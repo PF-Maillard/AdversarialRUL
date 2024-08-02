@@ -6,8 +6,9 @@ ResultsRUL/Figures/*
 ResultsRUL/Normal/RNN/*
 ResultsRUL/Normal/GRU/*
 ResultsRUL/Normal/LSTM/*
+ResultsRUL/Normal/LINEAR/*
+ResultsRUL/Normal/LOG/*
 ResultsRUL/Normal/EXP/*
-ResultsRUL/Normal/SingleEXP/*
 
 ResultsRUL/Adversarial/RNN/FGSM/*
 ResultsRUL/Adversarial/RNN/BIM/*
@@ -27,11 +28,17 @@ ResultsRUL/Adversarial/LSTM/CW/*
 ResultsRUL/Adversarial/LSTM/L2/*
 ResultsRUL/Adversarial/LSTM/L0/*
 
-ResultsRUL/Adversarial/SingleEXP/FGSM/*
-ResultsRUL/Adversarial/SingleEXP/BIM/*
-ResultsRUL/Adversarial/SingleEXP/CW/*
-ResultsRUL/Adversarial/SingleEXP/L2/*
-ResultsRUL/Adversarial/SingleEXP/L0/*
+ResultsRUL/Adversarial/LINEAR/FGSM/*
+ResultsRUL/Adversarial/LINEAR/BIM/*
+ResultsRUL/Adversarial/LINEAR/CW/*
+ResultsRUL/Adversarial/LINEAR/L2/*
+ResultsRUL/Adversarial/LINEAR/L0/*
+
+ResultsRUL/Adversarial/LOG/FGSM/*
+ResultsRUL/Adversarial/LOG/BIM/*
+ResultsRUL/Adversarial/LOG/CW/*
+ResultsRUL/Adversarial/LOG/L2/*
+ResultsRUL/Adversarial/LOG/L0/*
 
 ResultsRUL/Adversarial/EXP/FGSM/*
 ResultsRUL/Adversarial/EXP/BIM/*
@@ -46,7 +53,8 @@ ResultsRUL/Adversarial/EXP/L0/*
 !ResultsRUL/Normal/RNN/.gitkeep
 !ResultsRUL/Normal/GRU/.gitkeep
 !ResultsRUL/Normal/LSTM/.gitkeep
-!ResultsRUL/Normal/SingleEXP/.gitkeep
+!ResultsRUL/Normal/LINEAR/.gitkeep
+!ResultsRUL/Normal/LOG/.gitkeep
 !ResultsRUL/Normal/EXP/.gitkeep
 
 !ResultsRUL/Adversarial/RNN/FGSM/.gitkeep
@@ -67,11 +75,17 @@ ResultsRUL/Adversarial/EXP/L0/*
 !ResultsRUL/Adversarial/LSTM/L2/.gitkeep
 !ResultsRUL/Adversarial/LSTM/L0/.gitkeep
 
-!ResultsRUL/Adversarial/SingleEXP/FGSM/.gitkeep
-!ResultsRUL/Adversarial/SingleEXP/BIM/.gitkeep
-!ResultsRUL/Adversarial/SingleEXP/CW/.gitkeep
-!ResultsRUL/Adversarial/SingleEXP/L2/.gitkeep
-!ResultsRUL/Adversarial/SingleEXP/L0/.gitkeep
+!ResultsRUL/Adversarial/LINEAR/FGSM/.gitkeep
+!ResultsRUL/Adversarial/LINEAR/BIM/.gitkeep
+!ResultsRUL/Adversarial/LINEAR/CW/.gitkeep
+!ResultsRUL/Adversarial/LINEAR/L2/.gitkeep
+!ResultsRUL/Adversarial/LINEAR/L0/.gitkeep
+
+!ResultsRUL/Adversarial/LOG/FGSM/.gitkeep
+!ResultsRUL/Adversarial/LOG/BIM/.gitkeep
+!ResultsRUL/Adversarial/LOG/CW/.gitkeep
+!ResultsRUL/Adversarial/LOG/L2/.gitkeep
+!ResultsRUL/Adversarial/LOG/L0/.gitkeep
 
 !ResultsRUL/Adversarial/EXP/FGSM/.gitkeep
 !ResultsRUL/Adversarial/EXP/BIM/.gitkeep

@@ -85,25 +85,54 @@ class LSTMModel(nn.Module):
         
         return out
     
-class ExpDegradationModel(nn.Module):
-    def __init__(self, n_sensors):
-        super(ExpDegradationModel, self).__init__()
-        self.a = nn.Parameter(torch.ones(1))
+class LinearDegradationModel(nn.Module):
+    def __init__(self, n_sensors, window_size):
+        super(LinearDegradationModel, self).__init__()
+        self.a = nn.Parameter(torch.ones(window_size))
         self.b = nn.Parameter(torch.ones(n_sensors))
 
     def forward(self, x):
-        A = x @ self.b
-        A = torch.mean(self.a * torch.exp(A), dim=(1))
-        return A
-    
-class SingleExpDegradationModel(nn.Module):
-    def __init__(self):
-        super(SingleExpDegradationModel, self).__init__()
-        self.a = nn.Parameter(torch.ones(1))
-        self.b = nn.Parameter(torch.ones(1))
+        device = x.device
+        sum_y = torch.zeros(x.size(0)).to(device)
+        for i in range(len(self.a)):
+            A = x[:,i,:] @ self.b
+            y = self.a[i] * A
+            sum_y += y
+        average_y = sum_y / len(self.a)
+        average_y = torch.relu(average_y)
+        return average_y
+
+class LogDegradationModel(nn.Module):
+    def __init__(self, n_sensors, window_size):
+        super(LogDegradationModel, self).__init__()
+        self.a = nn.Parameter(torch.ones(window_size))
+        self.b = nn.Parameter(torch.ones(n_sensors))
 
     def forward(self, x):
-        x = x.view(x.size(0), -1)
-        x = torch.mean(x, axis=1)
-        A = self.a * torch.exp(self.b * x)
-        return A
+        device = x.device
+        sum_y = torch.zeros(x.size(0)).to(device)
+        for i in range(len(self.a)):
+            A = x[:,i,:] @ self.b
+            A = A**2
+            y = self.a[i] * torch.log(A + 1)
+            sum_y += y
+        average_y = sum_y / len(self.a)
+        average_y = torch.relu(average_y)
+        return average_y
+
+class ExpDegradationModel(nn.Module):
+    def __init__(self, n_sensors, window_size):
+        super(ExpDegradationModel, self).__init__()
+        self.a = nn.Parameter(torch.ones(window_size))
+        self.b = nn.Parameter(torch.ones(n_sensors))
+
+    def forward(self, x):
+        device = x.device
+        sum_y = torch.zeros(x.size(0)).to(device)
+        for i in range(len(self.a)):
+            A = x[:,i,:] @ self.b
+            y = self.a[i] * torch.exp(A) 
+            sum_y += y 
+        average_y = sum_y / len(self.a)
+        average_y = torch.relu(average_y)
+        return average_y
