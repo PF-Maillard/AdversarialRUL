@@ -2,7 +2,7 @@
 
 ## About
 
-This repository contains the implementation code for the "Adversarial Predictive Maintenance". The repository is dedicated to developing adversarial methods to deceive predictive maintenance systems. The implemented methods include the Fast Gradient Sign Method (FGSM), Basic Iterative Method (BIM), Carlini & Wagner (CW) attack L2, and the Minimal-L0 method (L0). The tests have been done considering the dataset: NASA Turbofan Jet Engine Data Set.
+This repository contains the implementation code for the "Adversarial Predictive Maintenance". The repository is dedicated to developing adversarial methods to deceive predictive maintenance systems. The implemented methods include the Fast Gradient Sign Method (FGSM), Basic Iterative Method (BIM), Minimal L2 attack and the Minimal sensor method. The tests have been done considering the dataset: NASA Turbofan Jet Engine Data Set.
 
 Note the utilization of the following repository: 
 - RUL Predictions using PyTorch LSTM: https://www.kaggle.com/code/jinsolkwon/rul-predictions-using-pytorch-lstm/notebook 
